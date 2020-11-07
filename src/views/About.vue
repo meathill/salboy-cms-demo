@@ -2,6 +2,9 @@
 .editor.single-post
   header.header-banner
     .container.full-width
+      uploader(
+        hint="头图，请上传图片，尺寸 1440x600，格式为 JPG",
+      )
 
   .container.summary.full-width
     .summary-info.section
@@ -88,10 +91,12 @@
 
 <script>
 import TextEditor from '@/components/editor/text-editor';
+import Uploader from "@/components/editor/uploader";
 
 export default {
   components: {
     TextEditor,
+    Uploader,
   },
 
   data() {
