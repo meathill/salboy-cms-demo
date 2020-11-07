@@ -2,11 +2,20 @@
 .editor.single-post
   header.header-banner
     .container.full-width
+      uploader(
+        hint="头图，请上传图片，尺寸 1440x600，格式为 JPG",
+      )
 
   .container.summary.full-width
     .summary-info.section
-      h1.summary-title Vue全家桶+Nuxt.js+Serverless 全栈开发企业分销系统
-      p.address 5 Saladaeng soi 1 , Rama IV Rd., Silom , Bangrak , Bangkok 10500 Thailand
+      text-editor.summary-title(
+        tag-name="h1",
+        v-model="title",
+      )
+      text-editor.address(
+        tag-name="p",
+        v-model="address"
+      )
       p.info All Inspire Development Co.,Ltd. 集团所有项目均集中于BTS 沿线，由于集团选址，均选择轻轨可以步行到达距离，并且总价均在250万泰铢（50万人民币）左右，很适合大部分普通民众以及初级投资者投资，所以集团所开发项目均在开盘或事建成后即告售罄。
 
       dl.summary-details
@@ -79,3 +88,22 @@
     p Copyright © 2012 www.baidu.com All Rights Reserved
 
 </template>
+
+<script>
+import TextEditor from '@/components/editor/text-editor';
+import Uploader from "@/components/editor/uploader";
+
+export default {
+  components: {
+    TextEditor,
+    Uploader,
+  },
+
+  data() {
+    return {
+      title: 'Vue全家桶+Nuxt.js+Serverless 全栈开发企业分销系统',
+      address: '5 Saladaeng soi 1 , Rama IV Rd., Silom , Bangrak , Bangkok 10500 Thailand',
+    };
+  },
+}
+</script>
