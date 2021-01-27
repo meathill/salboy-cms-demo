@@ -1,7 +1,10 @@
 <template lang="pug">
 .uploader
   .preview(v-if="previewSrc", :class="isUploaded ? '' : 'temp'")
-    img(:src="previewSrc")
+    img(
+      v-if="hasPreview",
+      :src="previewSrc",
+    )
     .uploading(v-if="isUploading") 上传中...
     .uploaded.text-success(v-if="isUploaded")
       i.fas.fa-check.mr-2
@@ -31,7 +34,7 @@
 </template>
 
 <script>
-
+import {sleep}  from '@/utils/helper';
 let count = 0;
 
 export default {
@@ -56,6 +59,10 @@ export default {
       type: String,
       default: '',
     },
+    hasPreview: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   data() {
@@ -77,8 +84,10 @@ export default {
 
       const [file] = files;
       const {name} = file;
-      this.previewSrc = URL.createObjectURL(file);
+      let url = URL.createObjectURL(file)
+      this.previewSrc = url;
       this.isUploading = true;
+      this.$emit('start', name);
 
       /*
       const formData = new FormData();
@@ -96,6 +105,8 @@ export default {
 
       const url = avFile.url();
       */
+      await sleep();
+      this.$emit('change', url, name);
       this.$refs.file.value = '';
     },
   },
