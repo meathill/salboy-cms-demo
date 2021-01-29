@@ -105,7 +105,7 @@ export default {
 
       const url = avFile.url();
       */
-      await sleep();
+      await sleep(500);
       this.$emit('change', url, name);
       this.$refs.file.value = '';
     },

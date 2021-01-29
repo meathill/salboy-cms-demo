@@ -4,7 +4,8 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '@/styl/screen.styl'
+import 'swiper/swiper-bundle.min.css';
+import '@/styl/screen.styl';
 
 Vue.config.productionTip = false
 
