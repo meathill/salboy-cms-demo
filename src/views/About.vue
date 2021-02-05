@@ -23,15 +23,9 @@
         :is-markdown="true",
       )
 
-      dl.summary-details
-        dt 规划面积：
-        dd 31413万平方米
-        dt 产权年限：
-        dd 永久产权
-        dt 户数：
-        dd 5624
-        dt 交房日期：
-        dd 2019年第三季度
+      list-editor.summary-details(
+        v-model="summary",
+      )
 
     aside.summary-aside
       section.sales.section
@@ -104,6 +98,7 @@ import TextEditor from '@/components/editor/text-editor';
 import Uploader from "@/components/editor/uploader";
 import GalleryEditor from "@/components/editor/gallery-editor";
 import HouseTypeEditor from "@/components/editor/house-type-editor";
+import ListEditor from '@/components/editor/list-editor';
 
 export default {
   components: {
@@ -111,6 +106,7 @@ export default {
     GalleryEditor,
     TextEditor,
     Uploader,
+    ListEditor,
   },
 
   data() {
@@ -126,6 +122,24 @@ export default {
           status: '待售',
         },
       ],
+      summary: [
+        {
+          title: '规划面积',
+          label: '31413万平方米',
+        },
+        {
+          title: '产权年限',
+          label: '永久产权',
+        },
+        {
+          title: '户数',
+          label: '5624',
+        },
+        {
+          title: '交房日期',
+          label: '2019年第三季度',
+        },
+      ]
     };
   },
 }

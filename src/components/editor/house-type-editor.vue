@@ -1,5 +1,5 @@
 <template lang="pug">
-.house-type-editor
+.house-type-editor(@change="onChange")
   button.btn.btn-outline-primary.btn-sm.edit-button(
     type="button",
     @click="isEditing = !isEditing",
@@ -48,6 +48,12 @@ export default {
       localValue: null,
       isEditing: false,
     };
+  },
+
+  methods: {
+    onChange() {
+      this.$emit('input', this.localValue);
+    },
   },
 
   beforeMount() {

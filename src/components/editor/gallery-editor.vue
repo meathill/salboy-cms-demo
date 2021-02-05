@@ -1,5 +1,5 @@
 <template lang="pug">
-.gallery-editor
+.gallery-editor(@change="onChange")
   .swiper-container.gallery-top(ref="top")
     .swiper-wrapper
       .swiper-slide(
@@ -59,6 +59,7 @@ export default {
   methods: {
     doRemove(index) {
       this.localValue.splice(index, 1);
+      this.onChange();
     },
 
     async onUploaded(url, name) {
@@ -69,6 +70,11 @@ export default {
       await this.$nextTick();
       this.thumbnails.update();
       this.top.update();
+      this.onChange();
+    },
+
+    onChange() {
+      this.$emit('input', this.localValue);
     },
   },
 

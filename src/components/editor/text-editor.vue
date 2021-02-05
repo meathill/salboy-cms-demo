@@ -7,12 +7,14 @@
       v-if="isMultiline",
       ref="input",
       v-model="localValue",
+      :placeholder="placeholder",
       :style="style",
     )
     input.form-control(
       v-else,
       ref="input",
       v-model="localValue",
+      :placeholder="placeholder",
       :style="style",
     )
 
@@ -59,6 +61,11 @@ export default {
     isMarkdown: {
       type: Boolean,
       default: false,
+    },
+
+    placeholder: {
+      type: String,
+      default: '',
     },
   },
 
