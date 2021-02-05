@@ -1,0 +1,51 @@
+.house-type-editor
+  border-color white
+  position: relative;
+
+  .table thead th,
+  .table tbody td
+    border-color white
+    padding 0
+    text-align center
+
+  th
+    background-color #FF0034
+    color white
+    line-height 3
+    font-size 1.25rem
+
+  td
+    background-color #F7F7F7
+    line-height 5
+
+  > .edit-button
+    position absolute
+    top 0
+    left -4em
+
+@media (max-width: 575px)
+  table
+    display flex
+
+  thead,
+  tobdy
+    display flex
+    flex-direction column
+
+  thead
+    width 100px
+
+  tbody
+    flex 1
+
+    tr,td
+      width 100%
+
+  th,td,tr
+    display block
+
+  .house-type-editor
+
+    td
+      font-size 1.25rem
+      line-height 3

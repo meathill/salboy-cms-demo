@@ -56,6 +56,9 @@
 
   .container.attributes.section.mt-row
     h2 房屋属性
+    house-type-editor(
+      v-model="houseType",
+    )
     table.table.attributes-table
 
     .d-flex
@@ -100,9 +103,11 @@
 import TextEditor from '@/components/editor/text-editor';
 import Uploader from "@/components/editor/uploader";
 import GalleryEditor from "@/components/editor/gallery-editor";
+import HouseTypeEditor from "@/components/editor/house-type-editor";
 
 export default {
   components: {
+    HouseTypeEditor,
     GalleryEditor,
     TextEditor,
     Uploader,
@@ -114,6 +119,13 @@ export default {
       address: '5 Saladaeng soi 1 , Rama IV Rd., Silom , Bangrak , Bangkok 10500 Thailand',
       description: 'All Inspire Development Co.,Ltd. 集团所有项目均集中于BTS 沿线，由于集团选址，均选择轻轨可以步行到达距离，并且总价均在250万泰铢（50万人民币）左右，很适合大部分普通民众以及初级投资者投资，所以集团所开发项目均在开盘或事建成后即告售罄。',
       gallery: [],
+      houseType: [
+        {
+          number: 5,
+          price: 10000,
+          status: '待售',
+        },
+      ],
     };
   },
 }
