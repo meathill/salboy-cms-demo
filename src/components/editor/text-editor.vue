@@ -7,6 +7,7 @@
       v-if="isMultiline",
       ref="input",
       v-model="localValue",
+      @blur="onBlur",
       :placeholder="placeholder",
       :style="style",
     )
@@ -14,11 +15,12 @@
       v-else,
       ref="input",
       v-model="localValue",
+      @blur="onBlur",
       :placeholder="placeholder",
       :style="style",
     )
 
-    .action-bar.btn-group-sm
+    .action-bar.btn-group-sm.p-2
       uploader(
         v-if="isMarkdown",
         size="sm",
@@ -28,7 +30,13 @@
         @change="onUploaderComplete",
       ) 插入图片
 
-      button.btn.btn-primary.ml-auto 保存
+      button.btn.btn-primary.ml-auto
+        i.bi.bi-check
+      button.btn.btn-secondary.ml-2(
+        type="button",
+        @click="doCancel",
+      )
+        i.bi.bi-x
 
 component.text-editor-static(
   v-else,
@@ -42,17 +50,15 @@ component.text-editor-static(
 <script>
 import marked from 'marked';
 import Uploader from "@/components/editor/uploader";
+import base from './base';
 
 export default {
   components: {Uploader},
+  mixins: [base],
   props: {
     tagName: {
       type: String,
       default: 'div',
-    },
-    value: {
-      type: String,
-      default: '',
     },
     isMultiline: {
       type: Boolean,
@@ -62,7 +68,6 @@ export default {
       type: Boolean,
       default: false,
     },
-
     placeholder: {
       type: String,
       default: '',
@@ -79,7 +84,6 @@ export default {
     return {
       isEditing: false,
       style: null,
-      localValue: null,
     };
   },
 
@@ -94,7 +98,16 @@ export default {
       this.isEditing = false;
       this.$emit('input', this.localValue);
     },
+    doCancel() {
+      this.isEditing = false;
+      this.localValue = this.value;
+    },
 
+    onBlur() {
+      if (!this.localValue || this.localValue === this.value) {
+        this.doCancel();
+      }
+    },
     onUploaderStart(name) {
       const {input} = this.$refs;
       const placeholder = `![Uploading ${name}]`;

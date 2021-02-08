@@ -72,12 +72,15 @@
     article
 
   .container.nation.section.mt-row
-    h2 泰国
-    article
+    nation-city-editor(
+      v-model="nation",
+    )
 
   .container.city.section.mt-row
-    h2 曼谷
-    article
+    nation-city-editor(
+      v-model="city",
+      state-key="city",
+    )
 
   .container.download.section.mt-row
     h2 资料下载
@@ -99,9 +102,11 @@ import Uploader from "@/components/editor/uploader";
 import GalleryEditor from "@/components/editor/gallery-editor";
 import HouseTypeEditor from "@/components/editor/house-type-editor";
 import ListEditor from '@/components/editor/list-editor';
+import NationCityEditor from "@/components/editor/nation-city-editor";
 
 export default {
   components: {
+    NationCityEditor,
     HouseTypeEditor,
     GalleryEditor,
     TextEditor,
@@ -139,7 +144,15 @@ export default {
           title: '交房日期',
           label: '2019年第三季度',
         },
-      ]
+      ],
+      nation: {
+        title: '国家',
+        description: '国家描述',
+      },
+      city: {
+        title: '城市',
+        description: '城市描述',
+      },
     };
   },
 }

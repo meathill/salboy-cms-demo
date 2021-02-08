@@ -20,9 +20,9 @@
   )
 
   .uploader-inner
-    .p-3
+    .p-3(v-if="hint")
       p
-        small.text-white(v-if="hint") {{hint}}
+        small.text-white {{hint}}
       label.btn.btn-secondary(
         :for="'uploader-input-' + count",
         :class="size ? 'btn-' + size: ''",
@@ -31,6 +31,16 @@
           i.fas.fa-upload.mr-2
           | {{label}}
       .alert.alert-danger(v-if="error") {{error}}
+
+    label.btn.btn-secondary(
+      v-else,
+      :for="'uploader-input-' + count",
+      :class="size ? 'btn-' + size: ''",
+    )
+      slot
+        i.fas.fa-upload.mr-2
+        | {{label}}
+    .alert.alert-danger(v-if="error") {{error}}
 </template>
 
 <script>
