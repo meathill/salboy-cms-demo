@@ -6,10 +6,14 @@ Vue.use(Vuex)
 export const MUTATIONS = {
   SET_NATIONS: 'setNations',
   SET_CITY: 'setCity',
+  SET_CURRENT_USER: 'setCurrentUser',
+  SET_ACCESS_FROM: 'setAccessFrom',
 };
 
 export default new Vuex.Store({
   state: {
+    currentUser: null,
+    accessFrom: null,
     nations: [
       {
         title: '泰国',
@@ -40,6 +44,12 @@ export default new Vuex.Store({
     ],
   },
   mutations: {
+    [MUTATIONS.SET_CURRENT_USER](state, user) {
+      state.currentUser = user;
+    },
+    [MUTATIONS.SET_ACCESS_FROM](state, from) {
+      state.accessFrom = from;
+    },
     [MUTATIONS.SET_NATIONS](state, nation) {
       const {title, description} = nation;
       const old = state.nations.find(({title: oTitle}) => oTitle === title);

@@ -8,24 +8,22 @@
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+<script>
+import {User} from 'leancloud-storage';
+import {MUTATIONS} from "@/store";
+export default {
+  beforeMount() {
+    const user = User.current();
+    if (user) {
+      this.$store.commit(MUTATIONS.SET_CURRENT_USER, user);
+      if (this.$route.name.startsWith('user.')) {
+        this.$router.replace({name: 'home'});
+      }
+    } else {
+      const {name, params} = this.$route;
+      this.$store.commit(MUTATIONS.SET_ACCESS_FROM, {name, params});
+      this.$router.replace({name: 'user.login'});
+    }
+  },
 }
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+</script>
