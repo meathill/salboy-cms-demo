@@ -1,6 +1,6 @@
 <template lang="pug">
 .user.user-login
-  form.w-25.p-5(@submit.prevent="doLogin")
+  form.w-50.p-5.mx-auto(@submit.prevent="doLogin")
     .form-group
       label.sr-only(for="input-email") 邮箱
       input#input-email.form-control(
