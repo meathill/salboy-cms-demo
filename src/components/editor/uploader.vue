@@ -5,7 +5,7 @@
       v-if="hasPreview",
       :src="previewSrc",
     )
-    .uploading(v-if="isUploading") 上传中...
+    .uploading(v-if="isUploading") 上传中... {{progress}}%
     .uploaded.text-success(v-if="isUploaded")
       i.fas.fa-check.mr-2
       | 已上传
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import {File} from 'leancloud-storage';
 import {sleep}  from '@/utils/helper';
 let count = 0;
 
@@ -82,6 +83,7 @@ export default {
       count: 0,
       previewSrc: null,
       error: null,
+      progress: null,
     };
   },
 
@@ -99,25 +101,23 @@ export default {
       this.isUploading = true;
       this.$emit('start', name);
 
-      /*
-      const formData = new FormData();
-      formData.append('file', file);
-      const avFile = new AV.File(name, file);
+      const avFile = new File(name, file);
       try {
-        const result = await avFile.save({
-          onprogress: progress => {
-
+        await avFile.save({
+          onprogress: event => {
+            const {total, loaded} = event;
+            this.progress = Math.round(loaded / total * 10000) / 100;
           },
         });
       } catch (e) {
         this.error = e.message;
       }
 
-      const url = avFile.url();
-      */
-      await sleep(500);
+      url = avFile.url();
+      this.previewSrc = url;
       this.$emit('change', url, name);
       this.$refs.file.value = '';
+      this.isUploading = false;
     },
   },
 

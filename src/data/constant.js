@@ -26,3 +26,6 @@ export const houseType = [
     ],
   },
 ];
+
+export const NATIONS_TABLE = 'nation';
+export const CITY_TABLE = 'city';

@@ -26,12 +26,13 @@
   text-editor(
     tag-name="article",
     :is-multiline="true",
-    v-model="localValue.description",
+    v-model="localValue.article",
   )
 </template>
 
 <script>
 import {mapState} from 'vuex';
+import capitalize from 'lodash/capitalize';
 import TextEditor from "@/components/editor/text-editor";
 import {MUTATIONS} from "@/store";
 
@@ -81,6 +82,7 @@ export default {
   },
 
   beforeMount() {
+    this.$store.dispatch(`get${capitalize(this.stateKey)}`);
     this.localValue = {
       ...this.value,
     };
