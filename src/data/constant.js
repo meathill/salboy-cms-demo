@@ -29,3 +29,5 @@ export const houseType = [
 
 export const NATIONS_TABLE = 'nation';
 export const CITY_TABLE = 'city';
+export const POSTS_TABLE = 'posts';
+export const POST_CONTENT_TABLE = 'post_content';

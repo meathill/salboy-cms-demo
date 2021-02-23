@@ -4,27 +4,28 @@
     .container.full-width
       uploader(
         hint="头图，请上传图片，尺寸 1440x600，格式为 JPG",
+        v-model="content.header",
       )
 
   .container.summary.full-width
     .summary-info.section
       text-editor.summary-title(
         tag-name="h1",
-        v-model="title",
+        v-model="content.title",
       )
       text-editor.address(
         tag-name="p",
-        v-model="address"
+        v-model="content.address"
       )
       text-editor.info(
         tag-name="p",
-        v-model="description",
+        v-model="content.info",
         :is-multiline="true",
         :is-markdown="true",
       )
 
       list-editor.summary-details(
-        v-model="summary",
+        v-model="content.summary",
       )
 
     aside.summary-aside
@@ -41,7 +42,7 @@
   .container.gallery.section.mt-row
     h2 楼盘效果图
     gallery-editor.gallery-photos(
-      v-model="gallery",
+      v-model="content.gallery",
     )
 
   .container.peripheral.section.mt-row
@@ -51,7 +52,7 @@
   .container.attributes.section.mt-row
     h2 房屋属性
     house-type-editor(
-      v-model="houseType",
+      v-model="content.houseType",
     )
     table.table.attributes-table
 
@@ -73,12 +74,12 @@
 
   .container.nation.section.mt-row
     nation-city-editor(
-      v-model="nation",
+      v-model="content.nation",
     )
 
   .container.city.section.mt-row
     nation-city-editor(
-      v-model="city",
+      v-model="content.city",
       state-key="city",
     )
 
@@ -103,6 +104,8 @@ import GalleryEditor from "@/components/editor/gallery-editor";
 import HouseTypeEditor from "@/components/editor/house-type-editor";
 import ListEditor from '@/components/editor/list-editor';
 import NationCityEditor from "@/components/editor/nation-city-editor";
+import {Query} from "leancloud-storage";
+import {POST_CONTENT_TABLE, POSTS_TABLE} from "@/data/constant";
 
 export default {
   components: {
@@ -114,47 +117,70 @@ export default {
     ListEditor,
   },
 
+  computed: {
+    id() {
+      return this.$route.params.id;
+    },
+  },
+
   data() {
     return {
       isChanged: false,
-      title: 'Vue全家桶+Nuxt.js+Serverless 全栈开发企业分销系统',
-      address: '5 Saladaeng soi 1 , Rama IV Rd., Silom , Bangrak , Bangkok 10500 Thailand',
-      description: 'All Inspire Development Co.,Ltd. 集团所有项目均集中于BTS 沿线，由于集团选址，均选择轻轨可以步行到达距离，并且总价均在250万泰铢（50万人民币）左右，很适合大部分普通民众以及初级投资者投资，所以集团所开发项目均在开盘或事建成后即告售罄。',
-      gallery: [],
-      houseType: [
-        {
-          number: 5,
-          price: 10000,
-          status: '待售',
+      content: {
+        title: 'Vue全家桶+Nuxt.js+Serverless 全栈开发企业分销系统',
+        address: '5 Saladaeng soi 1 , Rama IV Rd., Silom , Bangrak , Bangkok 10500 Thailand',
+        info: 'All Inspire Development Co.,Ltd. 集团所有项目均集中于BTS 沿线，由于集团选址，均选择轻轨可以步行到达距离，并且总价均在250万泰铢（50万人民币）左右，很适合大部分普通民众以及初级投资者投资，所以集团所开发项目均在开盘或事建成后即告售罄。',
+        gallery: [],
+        houseType: [
+          {
+            number: 5,
+            price: 10000,
+            status: '待售',
+          },
+        ],
+        summary: [
+          {
+            title: '规划面积',
+            label: '31413万平方米',
+          },
+          {
+            title: '产权年限',
+            label: '永久产权',
+          },
+          {
+            title: '户数',
+            label: '5624',
+          },
+          {
+            title: '交房日期',
+            label: '2019年第三季度',
+          },
+        ],
+        nation: {
+          title: '国家',
+          description: '国家描述',
         },
-      ],
-      summary: [
-        {
-          title: '规划面积',
-          label: '31413万平方米',
+        city: {
+          title: '城市',
+          description: '城市描述',
         },
-        {
-          title: '产权年限',
-          label: '永久产权',
-        },
-        {
-          title: '户数',
-          label: '5624',
-        },
-        {
-          title: '交房日期',
-          label: '2019年第三季度',
-        },
-      ],
-      nation: {
-        title: '国家',
-        description: '国家描述',
-      },
-      city: {
-        title: '城市',
-        description: '城市描述',
       },
     };
+  },
+
+  async beforeMount() {
+    let query = new Query(POSTS_TABLE);
+    const post = await query.get(this.id);
+    query = new Query(POST_CONTENT_TABLE);
+    query.equalTo('post', post);
+    const result = await query.find();
+    if (!result || result.length === 0) {
+      alert('Not exists');
+      return;
+    }
+    const [content] = result;
+    this.content = content.toJSON();
+    this.contentModel = content;
   },
 
   beforeRouteLeave(to, from, next) {

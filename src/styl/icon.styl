@@ -1,7 +1,7 @@
 .bi
   background-color currentColor
   mask-size 1em
-  mark-repeat no-repeat
+  mask-repeat no-repeat
   mask-position center
 
   &::before
@@ -9,7 +9,7 @@
     content ''
     width 1em
 
-for $icon in plus check x
+for $icon in plus check x trash-fill
   $path = '../../node_modules/bootstrap-icons/icons/' + $icon + '.svg'
   .bi-{$icon}
     mask-image url($path)

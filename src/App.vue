@@ -8,7 +8,7 @@
         li.nav-item
           router-link.nav-link(:to="{name: 'about'}") 关于
         li.nav-item
-          router-link.nav-link(:to="{name: 'page.new'}") 新建页面
+          router-link.nav-link(:to="{name: 'page.list'}") 页面
 
       .navbar-text.ml-auto {{user}}
 

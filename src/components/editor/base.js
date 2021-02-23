@@ -1,6 +1,7 @@
 import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 import defaults from 'lodash/defaults';
+import clone from 'lodash/clone';
 import cloneDeep from 'lodash/cloneDeep';
 
 export default {
@@ -32,8 +33,8 @@ export default {
 
     },
     processValue() {
-      if (isArray(this.value) && !isPlainObject(this.value)) {
-        this.localValue = this.value ? [...this.value] : this.createDefaultValue();
+      if (!isArray(this.value) && !isPlainObject(this.value)) {
+        this.localValue = this.value ? clone(this.value) : this.createDefaultValue();
       } else {
         this.localValue = defaults(cloneDeep(this.value), this.createDefaultValue());
       }
