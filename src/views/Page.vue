@@ -1,5 +1,38 @@
 <template lang="pug">
 .editor.single-post(@change="isChanged = true")
+  .container
+    h2 页面属性
+    .row
+
+      .col-sm-6
+        .form-group
+          label(for="sub-domain") 目录名
+          input#sub-domain.form-control(
+            v-model="formData.subDomain",
+          )
+        .form-group
+          label(for="keywords") 关键词
+          input#keywords.form-control(
+            v-model="formData.keywords",
+          )
+
+        .form-group
+          label(for="description") 描述
+          textarea#description.form-control(
+            v-model="formData.description",
+            rows="2",
+          )
+      .col-sm-6
+        .alert.alert-danger(v-if="message") {{message}}
+
+        button.btn.btn-lg.btn-primary(
+          type="button",
+          @click="doSave",
+          :disabled="isSaving",
+        )
+          span.spinner-border.spinner-border-sm.mr-2(v-if="isSaving")
+          i.bi.bi-check.mr-2(v-else)
+          | 保存
   header.header-banner
     .container.full-width
       uploader(
@@ -98,6 +131,7 @@
 </template>
 
 <script>
+import each from 'lodash/each';
 import TextEditor from '@/components/editor/text-editor';
 import Uploader from "@/components/editor/uploader";
 import GalleryEditor from "@/components/editor/gallery-editor";
@@ -106,6 +140,8 @@ import ListEditor from '@/components/editor/list-editor';
 import NationCityEditor from "@/components/editor/nation-city-editor";
 import {Query} from "leancloud-storage";
 import {POST_CONTENT_TABLE, POSTS_TABLE} from "@/data/constant";
+import Post from "@/model/Post";
+import PostContent from "@/model/PostContent";
 
 export default {
   components: {
@@ -121,11 +157,21 @@ export default {
     id() {
       return this.$route.params.id;
     },
+    meta() {
+      return this.$route.params.data;
+    },
   },
 
   data() {
     return {
+      isSaving: false,
       isChanged: false,
+      message: null,
+      formData: {
+        keywords: '',
+        description: '',
+        subDomain: '',
+      },
       content: {
         title: 'Vue全家桶+Nuxt.js+Serverless 全栈开发企业分销系统',
         address: '5 Saladaeng soi 1 , Rama IV Rd., Silom , Bangrak , Bangkok 10500 Thailand',
@@ -168,19 +214,86 @@ export default {
     };
   },
 
-  async beforeMount() {
-    let query = new Query(POSTS_TABLE);
-    const post = await query.get(this.id);
-    query = new Query(POST_CONTENT_TABLE);
-    query.equalTo('post', post);
-    const result = await query.find();
-    if (!result || result.length === 0) {
-      alert('Not exists');
-      return;
+  methods: {
+    async getPageData() {
+      let query;
+      let post;
+      if (!this.meta) {
+        query = new Query(POSTS_TABLE);
+        post = await query.get(this.id);
+      } else {
+        post = this.meta.model;
+      }
+      const postJson = post.toJSON();
+      this.formData = {
+        ...this.formData,
+        ...postJson,
+      };
+      this.postModel = post;
+      query = new Query(POST_CONTENT_TABLE);
+      query.equalTo('post', post);
+      const result = await query.find();
+      if (!result || result.length === 0) {
+        alert('Not exists');
+        return;
+      }
+      const [content] = result;
+      this.content = content.toJSON();
+      this.contentModel = content;
+    },
+    async doSave() {
+      if (this.$el.querySelector(':invalid')) {
+        alert('表单有误，请检查后再提交。');
+        return;
+      }
+
+      this.isSaving = true;
+      const isNew = !this.id;
+
+      // 保存 posts
+      const {keywords, description, subDomain} = this.formData;
+      each({keywords, description, subDomain}, (value, key) => {
+        this.postModel.set(key, value);
+      });
+      try {
+        await this.postModel.save();
+        if (isNew) {
+          const id = this.postModel.id;
+          this.$router.push({
+            name: 'page.edit',
+            params: {
+              id,
+            },
+          });
+        }
+      } catch (e) {
+        this.message = '保存页面属性失败。' + e.message;
+      }
+
+      // 保存 post_content
+      each(this.content, (key, value) => {
+        this.contentModel.set(key, value);
+      });
+      if (isNew) {
+        this.contentModel.set('post', this.postModel);
+      }
+      try {
+        await this.contentModel.save();
+      } catch (e) {
+        this.message = '保存页面内容失败。' + e.message;
+      }
+
+      this.isSaving = false;
+    },
+  },
+
+  beforeMount() {
+    if (this.id) {
+      this.getPageData();
+    } else {
+      this.postModel = new Post();
+      this.contentModel = new PostContent();
     }
-    const [content] = result;
-    this.content = content.toJSON();
-    this.contentModel = content;
   },
 
   beforeRouteLeave(to, from, next) {
