@@ -8,8 +8,8 @@ dl.list-editor(@change="onChange")
       placeholder="标题",
     )
     text-editor(
-      ref="label",
-      v-model="item.label",
+      ref="content",
+      v-model="item.content",
       tag-name="dd",
       placeholder="内容",
     )
@@ -48,13 +48,13 @@ export default {
     async doAddItem() {
       this.localValue.push({
         title: '标题',
-        label: '内容',
+        content: '内容',
         isEditing: true,
       });
       await this.$nextTick();
       const index = this.localValue.length - 1;
       this.$refs.title[index].doStartEdit();
-      this.$refs.label[index].isEditing = true;
+      this.$refs.content[index].isEditing = true;
       this.onChange();
     },
     doRemoveItem(index) {

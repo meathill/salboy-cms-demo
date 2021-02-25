@@ -39,8 +39,10 @@
 <script>
 import Swiper from 'swiper';
 import Uploader from "@/components/editor/uploader";
+import base from "@/components/editor/base";
 
 export default {
+  mixins: [base],
   components: {Uploader},
   props: {
     value: {

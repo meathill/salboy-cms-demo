@@ -34,7 +34,11 @@
           i.bi.bi-check.mr-2(v-else)
           | 保存
   header.header-banner
-    .container.full-width
+    .container.full-width.position-relative
+      img.salboy-post-header(
+        v-if="content.header",
+        :src="content.header",
+      )
       uploader(
         hint="头图，请上传图片，尺寸 1440x600，格式为 JPG",
         v-model="content.header",
@@ -81,6 +85,12 @@
   .container.peripheral.section.mt-row
     h2 周边配套
     .peripheral-content
+      text-editor(
+        v-model="content.peripheral",
+        tag-name="div",
+        is-multiline,
+        is-markdown,
+      )
 
   .container.attributes.section.mt-row
     h2 房屋属性
@@ -131,6 +141,7 @@
 </template>
 
 <script>
+import {Query, ACL, Role} from "leancloud-storage";
 import each from 'lodash/each';
 import TextEditor from '@/components/editor/text-editor';
 import Uploader from "@/components/editor/uploader";
@@ -138,7 +149,6 @@ import GalleryEditor from "@/components/editor/gallery-editor";
 import HouseTypeEditor from "@/components/editor/house-type-editor";
 import ListEditor from '@/components/editor/list-editor';
 import NationCityEditor from "@/components/editor/nation-city-editor";
-import {Query} from "leancloud-storage";
 import {POST_CONTENT_TABLE, POSTS_TABLE} from "@/data/constant";
 import Post from "@/model/Post";
 import PostContent from "@/model/PostContent";
@@ -177,6 +187,7 @@ export default {
         address: '5 Saladaeng soi 1 , Rama IV Rd., Silom , Bangrak , Bangkok 10500 Thailand',
         info: 'All Inspire Development Co.,Ltd. 集团所有项目均集中于BTS 沿线，由于集团选址，均选择轻轨可以步行到达距离，并且总价均在250万泰铢（50万人民币）左右，很适合大部分普通民众以及初级投资者投资，所以集团所开发项目均在开盘或事建成后即告售罄。',
         gallery: [],
+        peripheral: '',
         houseType: [
           {
             number: 5,
@@ -224,7 +235,13 @@ export default {
       } else {
         post = this.meta.model;
       }
-      const postJson = post.toJSON();
+      let {
+        createdAt,
+        updatedAt,
+        objectId,
+        post: postPointer,
+        ...postJson
+      } = post.toJSON();
       this.formData = {
         ...this.formData,
         ...postJson,
@@ -238,7 +255,14 @@ export default {
         return;
       }
       const [content] = result;
-      this.content = content.toJSON();
+      let contentJson;
+      ({
+        createdAt,
+        updatedAt,
+        objectId,
+        ...contentJson
+      } = content.toJSON());
+      this.content = contentJson;
       this.contentModel = content;
     },
     async doSave() {
@@ -249,6 +273,7 @@ export default {
 
       this.isSaving = true;
       const isNew = !this.id;
+      let acl;
 
       // 保存 posts
       const {keywords, description, subDomain} = this.formData;
@@ -256,7 +281,29 @@ export default {
         this.postModel.set(key, value);
       });
       try {
+        if (isNew) {
+          acl = new ACL();
+          const admin = new Role('admin');
+          acl.setPublicReadAccess(true);
+          acl.setRoleWriteAccess(admin, true);
+          this.postModel.setACL(acl);
+        }
         await this.postModel.save();
+      } catch (e) {
+        this.message = '保存页面属性失败。' + e.message;
+      }
+
+      // 保存 post_content
+      each(this.content, (value, key) => {
+        this.contentModel.set(key, value);
+      });
+      if (isNew) {
+        this.contentModel.setACL(acl);
+        this.contentModel.set('post', this.postModel);
+      }
+      try {
+        await this.contentModel.save();
+        this.isChanged = false;
         if (isNew) {
           const id = this.postModel.id;
           this.$router.push({
@@ -266,19 +313,6 @@ export default {
             },
           });
         }
-      } catch (e) {
-        this.message = '保存页面属性失败。' + e.message;
-      }
-
-      // 保存 post_content
-      each(this.content, (key, value) => {
-        this.contentModel.set(key, value);
-      });
-      if (isNew) {
-        this.contentModel.set('post', this.postModel);
-      }
-      try {
-        await this.contentModel.save();
       } catch (e) {
         this.message = '保存页面内容失败。' + e.message;
       }

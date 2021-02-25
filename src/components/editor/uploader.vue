@@ -45,7 +45,6 @@
 
 <script>
 import {File} from 'leancloud-storage';
-import {sleep}  from '@/utils/helper';
 let count = 0;
 
 export default {
