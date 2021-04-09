@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import AV from 'leancloud-storage';
 import App from './App.vue'
-import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import 'bootstrap/dist/css/bootstrap.min.css';
